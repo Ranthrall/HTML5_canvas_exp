@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>BLKTERM - BlackICE</title>
+    <script src="js/terminal.js"></script>
+<style>
+body { background: #000; visibility:visible; color: #FFF;}
+::selection {
+  background: #FF5E99;
+}
+#container {
+  padding: 1em 1.5em 1em 1em;
+  overflow: auto;
+  white-space: nowrap;
+}
+#container output {
+  clear: both;
+  width: 100%;
+}
+#container output h3 {
+  margin: 0;
+}
+#container output pre {
+  margin: 0;
+}
+.input-line {
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  clear: both;
+}
+.input-line > div:nth-child(2) {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+}
+.prompt {
+  white-space: nowrap;
+  color: green;
+  margin-right: 7px;
+  display: -webkit-box;
+  -webkit-box-pack: center;
+  -webkit-box-orient: vertical;
+  display: -moz-box;
+  -moz-box-pack: center;
+  -moz-box-orient: vertical;
+  display: box;
+  box-pack: center;
+  box-orient: vertical;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+.cmdline, .cmdline:read-only {
+  outline: none;
+  background-color: transparent;
+  margin: 0;
+  width: 100%;
+  border: none;
+  color: white;
+}
+.folder {
+  color: blue;
+}
+.ls-files {
+  height: 45px;
+  /* Default, but changed by js depending on length of filename */
+  -webkit-column-width: 100px;
+  -moz-column-width: 100px;
+  -o-column-width: 100px;
+  column-width: 100px;
+}
+/* Themes */
+body.cream {
+  color: white;
+}
+.cream .prompt {
+  color: purple;
+}
+.cream .cmdline {
+  color: blue;
+}
+</style>
+</head>
+    <div id=terminal style="background: #000; width: 100%; height: 96%; left: 0px; top: 10px; overflow: auto;">
+        <div id="container">
+        <output></output>
+            <div id="input-line" class="input-line">
+                <div class="prompt">$&gt;</div><div><input class="cmdline" autofocus /></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function() {
+  var term = new Terminal('#input-line .cmdline', '#container output');
+  term.initFS(false, 1024 * 1024);
+
+  if (document.location.hash) {
+    var theme = document.location.hash.substring(1).split('=')[1];
+    term.setTheme(theme);
+  } else if (localStorage.theme) {
+    term.setTheme(localStorage.theme);
+  }
+
+  // Setup the DnD listeners for file drop.
+  var body = document.querySelector('body');
+
+  body.addEventListener('dragenter', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.classList.add('dropping');
+  }, false);
+
+  body.addEventListener('dragover', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }, false);
+
+  body.addEventListener('drop', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.classList.remove('dropping');
+    term.addDroppedFiles(e.dataTransfer.files);
+    term.output('<div>File(s) added!</div>');
+  }, false);
+})();
+</script>
+</html>
