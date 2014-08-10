@@ -157,9 +157,9 @@ function drawEnemy() {
 
 function moveEnemy() {
   for (var i = 0; i < enemies.length; i++) {
-    if (enemies[i][1] < height) {
+    if (enemies[i][1] < h) {
       enemies[i][1] += enemies[i][4];
-    } else if (enemies[i][1] > height - 1) {
+    } else if (enemies[i][1] > h - 1) {
       enemies[i][1] = -45;
     }
   }
